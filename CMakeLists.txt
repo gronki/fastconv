@@ -1,19 +1,18 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.20)
 project(fastconv Fortran)
 
 enable_language(Fortran)
 enable_language(C)
 
 set(CMAKE_Fortran_FLAGS "-std=f2018")
-set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funsafe-math-optimizations -flto")
-set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O3 -funsafe-math-optimizations -flto -g")
+set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funsafe-math-optimizations -fno-protect-parens")
+set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O3 -funsafe-math-optimizations -fno-protect-parens -g")
 set(CMAKE_Fortran_FLAGS_DEBUG "-Og -fcheck=all -g")
 
-set(CMAKE_C_FLAGS_RELEASE "-O3 -funsafe-math-optimizations -flto")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -funsafe-math-optimizations -flto -g")
+set(CMAKE_C_FLAGS_RELEASE "-O3 -funsafe-math-optimizations")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -funsafe-math-optimizations -g")
 set(CMAKE_C_FLAGS_DEBUG "-Og -g")
 
-# add_compile_options("-g")
 add_compile_options("-march=native")
 add_compile_options("-Wall" "-Wextra")
 
