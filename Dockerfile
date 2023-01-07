@@ -1,4 +1,4 @@
-FROM rockylinux:9.1
+FROM fedora:latest
 
 RUN dnf install -y gcc-gfortran gcc cmake && dnf clean all
 
