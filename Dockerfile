@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora
 
 RUN dnf install -y gcc-gfortran gcc cmake && dnf clean all
 
