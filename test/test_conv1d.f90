@@ -18,13 +18,16 @@ program fastconv_test
 #   endif
 #   define run_test(x) run_test_1(QUOTE(x), (x))
 
+    call run_test(conv1d_ref_t())
     call run_test(conv1d_t())
-    call run_test(conv1d_pad_t())
-    call run_test(conv1d_pad_t(use_simd=.true.))
-    call run_test(conv1d_pad_t(pad_modulo=4, trim_pad=.true.))
-    call run_test(conv1d_pad_t(pad_modulo=4, trim_pad=.true., use_simd=.true.))
-    call run_test(conv1d_pad_t(pad_modulo=8, trim_pad=.true.))
-    call run_test(conv1d_pad_t(pad_modulo=8, trim_pad=.true., use_simd=.true.))
+    call run_test(conv1d_ref_t(preserve_shape=.true.))
+    call run_test(conv1d_t(preserve_shape=.true.))
+
+    call run_test(conv1d_pad_t(pad_modulo=4))
+    call run_test(conv1d_pad_t(pad_modulo=4, use_simd=.true.))
+    call run_test(conv1d_pad_t(pad_modulo=8))
+    call run_test(conv1d_pad_t(pad_modulo=8, use_simd=.true.))
+    call run_test(conv1d_pad_t(pad_modulo=16))
 
 contains
 
@@ -41,15 +44,19 @@ contains
         verif_y = 0
 
         iter_array_sizes: do i = 1, size(array_sizes)
+
+            allocate(x(array_sizes(i)))
+
             iter_kernel_sizes: do j = 1, size(kernel_sizes)
 
-                allocate(x(array_sizes(i)), k(kernel_sizes(j)))
+                allocate(k(kernel_sizes(j)))
 
                 call set_seed(1337)
 
                 call random_number(k)
                 call conv % set_kernel(k)
-                allocate(y(conv % output_shape(size(x))))
+                
+                allocate(y(conv % output_shape(size(x, kind=int64))), source=0.)
 
                 reps = max(1, nint(1e8 / (real(array_sizes(i)) * sqrt(real(kernel_sizes(j))))))
 
@@ -61,8 +68,8 @@ contains
                     call cpu_time(t2)
 
                     time_total = time_total + (t2 - t1)
-                    verif_x = verif_x + sum(x)
-                    verif_y = verif_y + sum(y)
+                    verif_x = verif_x + sum(real(x, kind=real64))
+                    verif_y = verif_y + sum(real(y, kind=real64))
                 end do
 
 
