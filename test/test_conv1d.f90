@@ -73,9 +73,12 @@ contains
                 end do
 
 
-                deallocate(x, y, k)
+                deallocate(y, k)
 
             end do iter_kernel_sizes
+
+            deallocate(x)
+            
         end do iter_array_sizes
 
         print *, test_title, ' --> '

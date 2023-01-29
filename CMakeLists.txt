@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(fastconv)
-
-enable_language(Fortran)
-enable_language(C)
+project(fastconv LANGUAGES Fortran C)
 
 set(IS_RELEASE $<NOT:$<CONFIG:Debug>>)
 set(IS_DEBUG $<CONFIG:Debug>)
