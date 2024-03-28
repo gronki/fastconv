@@ -19,25 +19,21 @@ contains
     end subroutine
 
 
-    function conv2d_ref_output_shape(self, input_shape) result(output_shape)
+    pure module function conv2d_ref_kernel_shape(self) result(kernel_shape)
         class(conv2d_ref_t), intent(in) :: self
-        integer(kind=size_k), intent(in) :: input_shape(2)
-        integer(kind=size_k) :: output_shape(2)
+        integer(kind=size_k) :: kernel_shape(2)
 
-#       if defined(CHECKS)
+#       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &
             error stop '2D convolution kernel not initialized'
 #       endif
 
-        output_shape = input_shape + merge(0_size_k, &
-            1_size_k - shape(self % kernel, kind=size_k), &
-            self % preserve_shape)
-
+        kernel_shape = shape(self % kernel)
     end function
 
 
     subroutine conv2d_ref_conv(self, x, y)
-        class(conv2d_ref_t), intent(inout) :: self
+        class(conv2d_ref_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:,:)
         real(real32), intent(inout), contiguous :: y(:,:)
 
@@ -45,18 +41,18 @@ contains
         integer(kind=size_k) :: output_shape_raw(2), output_shape(2), offset(2)
         real(real32) :: total
 
-#       if defined(CHECKS)
+#       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &
             error stop '2D convolution kernel not initialized'
 #       endif
 
         input_shape = shape(x, kind=size_k)
-        kernel_shape = shape(self % kernel, kind=size_k)
+        kernel_shape = self % kernel_shape()
         offset = merge((kernel_shape - 1) / 2, 0_size_k, self % preserve_shape)
         output_shape = self % output_shape(input_shape)
         output_shape_raw = input_shape - kernel_shape + 1
 
-#       if defined(CHECKS)
+#       ifndef NDEBUG
         if (any(shape(y) /= output_shape)) then
             block
                 character(len=256) :: errmsg

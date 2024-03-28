@@ -18,17 +18,17 @@ contains
     end subroutine
 
 
-    pure module function conv1d_ref_output_shape(self, input_shape) result(output_shape)
+    pure module function conv1d_ref_output_size(self, input_size) result(output_size)
         class(conv1d_ref_t), intent(in) :: self
-        integer(kind=size_k), intent(in) :: input_shape
-        integer(kind=size_k) :: output_shape
+        integer(kind=size_k), intent(in) :: input_size
+        integer(kind=size_k) :: output_size
 
-#       if defined(CHECKS)
+#       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &
             error stop '1D convolution kernel not initialized'
 #       endif
 
-        output_shape = input_shape + merge(0_size_k, &
+        output_size = input_size + merge(0_size_k, &
             1 - size(self % kernel, kind=size_k), &
             self % preserve_shape)
 
@@ -39,34 +39,34 @@ contains
         class(conv1d_ref_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:)
         real(real32), intent(inout), contiguous :: y(:)
-        integer(kind=size_k) :: input_shape, output_shape, output_shape_raw, offset, kernel_shape
+        integer(kind=size_k) :: input_size, output_size, output_size_raw, offset, kernel_size
 
-        input_shape = size(x, kind=size_k)
+        input_size = size(x, kind=size_k)
 
-#       if defined(CHECKS)
+#       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &
             error stop '1D convolution kernel not initialized'
 #       endif
 
-        output_shape = self % output_shape(input_shape)
+        output_size = self % output_size(input_size)
 
-#       if defined(CHECKS)
-        if (size(y, kind=size_k) /= output_shape) then
+#       ifndef NDEBUG
+        if (size(y, kind=size_k) /= output_size) then
             block
                 character(len=256) :: errmsg
                 write(errmsg, '(a, a, i0, a, i0, a)') &
                     "incorrect shape for 1D convolution output; ", &
-                    "expected [", output_shape, "], but got [", size(y), "]"
+                    "expected [", output_size, "], but got [", size(y), "]"
                 error stop trim(errmsg)
             end block
         end if
 #       endif
 
-        kernel_shape = size(self % kernel)
-        output_shape_raw = input_shape - kernel_shape + 1
-        offset = merge((kernel_shape - 1) / 2, 0_size_k, self % preserve_shape)
+        kernel_size = size(self % kernel)
+        output_size_raw = input_size - kernel_size + 1
+        offset = merge((kernel_size - 1) / 2, 0_size_k, self % preserve_shape)
 
-        call conv1d_core(x, self % kernel, y(1 + offset : output_shape_raw + offset))
+        call conv1d_core(x, self % kernel, y(1 + offset : output_size_raw + offset))
 
     end subroutine
 

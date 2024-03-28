@@ -1,13 +1,16 @@
-FROM fedora
+FROM debian:bookworm-slim
 
-RUN dnf install -y gcc-gfortran gcc cmake && dnf clean all
+RUN apt-get update && apt-get install -y --no-install-recommends gfortran make cmake && apt-get clean
 
-COPY . /opt/fastconv
+COPY . /src/fastconv
 
-WORKDIR /opt/fastconv/build
+WORKDIR /src/fastconv
 
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build . --verbose && \
-    cmake --install .
+RUN cmake . -DCMAKE_BUILD_TYPE=Release -B build && \
+    cmake --build build && \
+    cmake --install build && \
+    rm -rf build
+
+WORKDIR /var/work
 
 ENTRYPOINT test_conv1d && test_conv2d

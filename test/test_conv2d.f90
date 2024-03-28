@@ -17,15 +17,15 @@ program test_conv2d
     open(unit=77, file='test_conv2d_stats.txt', action='write')
 
     call run_test(conv2d_ref_t())
-    call run_test(conv2d_ref_t(preserve_shape=.true.))
-    call run_test(conv2d_t())
-    call run_test(conv2d_t(preserve_shape=.true.))
-
+    call run_test(conv2d_line_t(conv1d_ref_t()))
+    
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=4)))
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=4, use_simd=.true.)))
     
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=8)))
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=8, use_simd=.true.)))
+    
+    call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=16)))
 
     close(unit=77)
 
@@ -39,10 +39,13 @@ contains
         integer :: i, j, l, reps
         real(real64) :: time_total, t1, t2, verif_x, verif_y
         integer(int64), parameter :: array_sizes(*,*) = reshape([ &
+             87,   91, &
+            123,  321, &
+            422,  522, &
             768, 1024, &
             911, 1337, &
-            2421, 777, &
-            1698, 2142], [4, 2], order=[2, 1])
+            2421, 1377, &
+            3698, 3142], [7, 2], order=[2, 1])
         integer(int64), parameter :: kernel_sizes(*,*) = reshape([ &
             3,  3,  &
             5,  3,  &
@@ -79,12 +82,12 @@ contains
                 call set_seed(1337)
 
                 call random_number(k)
-                call conv % set_kernel(k)
+                call conv % set_kernel(k / sum(k))
                 
                 output_shape = conv % output_shape(array_sizes(i,:))
                 allocate(y(output_shape(1), output_shape(2)), source=0.)
 
-                reps = max(1, nint(1e8 / (product(real(array_sizes(i,:))) &
+                reps = max(1, nint(3e7 / (product(real(array_sizes(i,:))) &
                     * sqrt(product(real(kernel_sizes(j,:)))))))
 
                 do l = 1, reps

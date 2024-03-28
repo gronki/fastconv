@@ -7,22 +7,27 @@ set(IS_FORTRAN $<COMPILE_LANGUAGE:Fortran>)
 set(IS_FORTRAN_DEBUG $<AND:${IS_DEBUG},${IS_FORTRAN}>)
 set(IS_FORTRAN_RELEASE $<AND:${IS_RELEASE},${IS_FORTRAN}>)
 
-add_compile_options($<${IS_RELEASE}:-O3>)
-add_compile_options($<${IS_RELEASE}:-funsafe-math-optimizations>)
-add_compile_options($<${IS_FORTRAN_RELEASE}:-fno-protect-parens>)
+add_compile_options(
+    $<${IS_RELEASE}:-funsafe-math-optimizations>
+    $<${IS_RELEASE}:-fno-semantic-interposition>
+    $<${IS_RELEASE}:-fallow-store-data-races>
+    $<${IS_FORTRAN_RELEASE}:-fno-protect-parens>
+)
 
-add_compile_options($<${IS_DEBUG}:-Og>)
-add_compile_options($<${IS_DEBUG}:-DDEBUG>)
-add_compile_options($<${IS_DEBUG}:-DCHECKS>)
-add_compile_options($<${IS_FORTRAN_DEBUG}:-fcheck=all>)
+add_compile_options(
+    $<${IS_DEBUG}:-Og>
+    $<${IS_FORTRAN_DEBUG}:-fcheck=all>
+    $<${IS_FORTRAN_DEBUG}:-Warray-temporaries>
+    -Wall -Wextra
+)
 
-add_compile_options($<${IS_FORTRAN}:-fimplicit-none>)
-add_compile_options($<${IS_FORTRAN}:-ffree-line-length-none>)
-add_compile_options($<${IS_FORTRAN}:-fcoarray=single>)
-add_compile_options($<${IS_FORTRAN}:-cpp>)
+add_compile_options(
+    $<${IS_FORTRAN}:-fimplicit-none>
+    $<${IS_FORTRAN}:-ffree-line-length-none>
+    $<${IS_FORTRAN}:-cpp>
+)
 
 add_compile_options(-march=native)
-add_compile_options(-Wall -Wextra)
 
 add_subdirectory(utils)
 add_subdirectory(conv)

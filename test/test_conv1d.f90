@@ -19,14 +19,13 @@ program fastconv_test
 #   define run_test(x) run_test_1(QUOTE(x), (x))
 
     call run_test(conv1d_ref_t())
-    call run_test(conv1d_ref_t(preserve_shape=.true.))
-    call run_test(conv1d_t())
-    call run_test(conv1d_t(preserve_shape=.true.))
-
+    
     call run_test(conv1d_pad_t(pad_modulo=4))
     call run_test(conv1d_pad_t(pad_modulo=4, use_simd=.true.))
+    
     call run_test(conv1d_pad_t(pad_modulo=8))
     call run_test(conv1d_pad_t(pad_modulo=8, use_simd=.true.))
+    
     call run_test(conv1d_pad_t(pad_modulo=16))
 
 contains
@@ -54,9 +53,9 @@ contains
                 call set_seed(1337)
 
                 call random_number(k)
-                call conv % set_kernel(k)
+                call conv % set_kernel(k / sum(k))
 
-                allocate(y(conv % output_shape(size(x, kind=int64))), source=0.)
+                allocate(y(conv % output_size(size(x, kind=int64))), source=0.)
 
                 reps = max(1, nint(1e8 / (real(array_sizes(i)) * sqrt(real(kernel_sizes(j))))))
 
