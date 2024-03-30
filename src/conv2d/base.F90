@@ -10,11 +10,6 @@ contains
         integer(kind=size_k), intent(in) :: input_shape(2)
         integer(kind=size_k) :: output_shape(2)
 
-#       ifndef NDEBUG
-        if (.not. allocated(self % kernel)) &
-            error stop '2D convolution kernel not initialized'
-#       endif
-
         output_shape = input_shape + merge(0_size_k, &
             1_size_k - self % kernel_shape(), &
             self % preserve_shape)

@@ -1,4 +1,4 @@
-submodule (conv2d_m) core
+submodule (conv2d_m) c2d_core
 
     use iso_fortran_env
     use conv_base_m, only: size_k

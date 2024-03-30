@@ -1,4 +1,4 @@
-submodule (conv1d_m) core
+submodule (conv1d_m) c1d_core
 
     use iso_c_binding
     use iso_fortran_env, only: error_unit
