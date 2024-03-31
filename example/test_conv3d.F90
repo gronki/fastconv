@@ -41,7 +41,7 @@ contains
             167, 173, 211 &
         ], [5, 3], order=[2, 1])
         integer(int64), parameter :: kernel_sizes(*,*) = reshape([ &
-            3,  3,  3,  &
+            1,  3,  3,  &
             3,  5,  3,  &
             5,  3,  3,  &
             5,  7,  7,  &

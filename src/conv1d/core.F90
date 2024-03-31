@@ -43,6 +43,8 @@ contains
             call conv1d_k8(x, k, y)
         else if (modulo(kernel_size, 4) == 0) then
             call conv1d_k4(x, k, y)
+        else if (kernel_size == 1) then
+            y(:) = x * k(1)
         else
             call conv1d_general(x, k, y)
         end if
@@ -84,8 +86,10 @@ contains
         integer(kind=size_k) :: i, j, kernel_size_16, output_size
         real(real32) :: total
 
-        ! this subroutine is only called internally, so we do not check
-        ! whether modulo(kernel_size, 8) == 0
+#       ifndef NDEBUG
+        if (modulo(size(k), 16) /= 0) error stop "size of kernel must be multiply of 16"
+#       endif
+
         kernel_size_16 = size(k) / 16
         output_size = size(x) - 16 * kernel_size_16 + 1
 
@@ -110,8 +114,10 @@ contains
         integer(kind=size_k) :: i, j, kernel_size_8, output_size
         real(real32) :: total
 
-        ! this subroutine is only called internally, so we do not check
-        ! whether modulo(kernel_size, 8) == 0
+#       ifndef NDEBUG
+        if (modulo(size(k), 8) /= 0) error stop "size of kernel must be multiply of 8"
+#       endif
+
         kernel_size_8 = size(k) / 8
         output_size = size(x) - 8 * kernel_size_8 + 1
 
@@ -136,8 +142,10 @@ contains
         integer(kind=size_k) :: i, j, kernel_size_4, output_size
         real(real32) :: total
 
-        ! this subroutine is only called internally, so we do not check
-        ! whether modulo(kernel_size, 4) == 0
+#       ifndef NDEBUG
+        if (modulo(size(k), 4) /= 0) error stop "size of kernel must be multiply of 4"
+#       endif
+
         kernel_size_4 = size(k) / 4
         output_size = size(x) - 4 * kernel_size_4 + 1
 

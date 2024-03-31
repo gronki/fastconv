@@ -42,7 +42,7 @@ contains
             2421, 1377, &
             3698, 3142], [7, 2], order=[2, 1])
         integer(int64), parameter :: kernel_sizes(*,*) = reshape([ &
-            3,  3,  &
+            1,  3,  &
             5,  3,  &
             3,  5,  &
             5,  5,  &

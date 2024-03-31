@@ -8,7 +8,7 @@ program fastconv_test
 
     integer :: i
     integer(int64), parameter :: array_sizes(*) = [(nint(100 * 1.9**real(i), kind=int64), i = 0, 12)]
-    integer(int64), parameter :: kernel_sizes(*) = [3, 4, 5, 6, 7, 8, 9, 11, 13, 15] !, 17, 19, 21, 24, 27, 33]
+    integer(int64), parameter :: kernel_sizes(*) = [1, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15] !, 17, 19, 21, 24, 27, 33]
     integer, parameter :: fp = real32
 
 #   ifdef __GFORTRAN__

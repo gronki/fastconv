@@ -76,10 +76,15 @@ contains
         offset = merge((kernel_size - 1_size_k) / 2, 0_size_k, self % preserve_shape)
         padding = self % padding
 
+        if (kernel_size == 1) then
+            y(:) = x(:) * self % kernel(1)
+            return
+        end if
+
         ! if (self % use_simd) then
         !     call conv1d_simd(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
         ! else
-            call conv1d_core(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
+        call conv1d_core(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
         ! end if
 
         if (padding > 0) then
