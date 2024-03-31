@@ -19,13 +19,8 @@ program fastconv_test
 #   define run_test(x) run_test_1(QUOTE(x), (x))
 
     call run_test(conv1d_ref_t())
-    
     call run_test(conv1d_pad_t(pad_modulo=4))
-    call run_test(conv1d_pad_t(pad_modulo=4, use_simd=.true.))
-    
     call run_test(conv1d_pad_t(pad_modulo=8))
-    call run_test(conv1d_pad_t(pad_modulo=8, use_simd=.true.))
-    
     call run_test(conv1d_pad_t(pad_modulo=16))
 
 contains

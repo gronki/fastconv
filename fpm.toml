@@ -10,6 +10,8 @@ auto-executables = true
 auto-tests = true
 auto-examples = true
 module-naming = false
+[library]
+source-dir = "src"
 [install]
 library = true
 [fortran]

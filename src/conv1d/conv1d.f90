@@ -9,7 +9,7 @@ module conv1d_m
     ! procedures
 
     interface
-        module subroutine conv1d_core(x, k, y)
+        pure module subroutine conv1d_core(x, k, y)
             real(real32), intent(in), contiguous :: x(:), k(:)
             real(real32), intent(out), contiguous :: y(:)
         end subroutine
@@ -34,14 +34,14 @@ module conv1d_m
     end type
 
     abstract interface
-        subroutine conv_proto(self, x, y)
+        pure subroutine conv_proto(self, x, y)
             import :: conv1d_base_t, real32
             class(conv1d_base_t), intent(in) :: self
             real(real32), intent(in), contiguous :: x(:)
             real(real32), intent(inout), contiguous :: y(:)
         end subroutine
 
-        subroutine set_kernel_proto(self, k)
+        pure subroutine set_kernel_proto(self, k)
             import :: conv1d_base_t, real32
             class(conv1d_base_t), intent(inout) :: self
             real(real32), intent(in) :: k(:)
@@ -67,7 +67,7 @@ module conv1d_m
     end type
 
     interface
-        module subroutine conv1d_ref_set_kernel(self, k)
+        pure module subroutine conv1d_ref_set_kernel(self, k)
             class(conv1d_ref_t), intent(inout) :: self
             real(real32), intent(in) :: k(:)
         end subroutine
@@ -78,7 +78,7 @@ module conv1d_m
             integer(kind=size_k) :: output_size
         end function
 
-        module subroutine conv1d_ref_conv(self, x, y)
+        pure module subroutine conv1d_ref_conv(self, x, y)
             class(conv1d_ref_t), intent(in) :: self
             real(real32), intent(in), contiguous :: x(:)
             real(real32), intent(inout), contiguous :: y(:)
@@ -91,7 +91,7 @@ module conv1d_m
 
     type, extends(conv1d_base_t) :: conv1d_pad_t
         integer(kind=size_k) :: pad_modulo = 4
-        logical :: use_simd = .false.
+        ! logical :: use_simd = .false.
         integer(kind=size_k), private :: padding = 0, kernel_size = 0
     contains
         procedure :: set_kernel => conv1d_pad_set_kernel
@@ -100,7 +100,7 @@ module conv1d_m
     end type
 
     interface
-        module subroutine conv1d_pad_set_kernel(self, k)
+        pure module subroutine conv1d_pad_set_kernel(self, k)
             class(conv1d_pad_t), intent(inout) :: self
             real(real32), intent(in) :: k(:)
         end subroutine
@@ -111,7 +111,7 @@ module conv1d_m
             integer(kind=size_k) :: output_size
         end function
 
-        module subroutine conv1d_pad_conv(self, x, y)
+        pure module subroutine conv1d_pad_conv(self, x, y)
             class(conv1d_pad_t), intent(in) :: self
             real(real32), intent(in), contiguous :: x(:)
             real(real32), intent(inout), contiguous :: y(:)
@@ -129,7 +129,7 @@ module conv1d_m
 
 contains
 
-    function apply(self, x) result(y)
+    pure function apply(self, x) result(y)
         class(conv1d_base_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:)
         real(real32), allocatable :: y(:)

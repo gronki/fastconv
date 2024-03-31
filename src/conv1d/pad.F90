@@ -5,7 +5,7 @@ submodule (conv1d_m) pad
 
 contains
 
-    module subroutine conv1d_pad_set_kernel(self, k)
+    pure module subroutine conv1d_pad_set_kernel(self, k)
         class(conv1d_pad_t), intent(inout) :: self
         real(real32), intent(in) :: k(:)
         integer(kind=size_k) :: kernel_size, padding
@@ -43,7 +43,7 @@ contains
     end function
 
 
-    module subroutine conv1d_pad_conv(self, x, y)
+    pure module subroutine conv1d_pad_conv(self, x, y)
         class(conv1d_pad_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:)
         real(real32), intent(inout), contiguous :: y(:)
@@ -76,11 +76,11 @@ contains
         offset = merge((kernel_size - 1_size_k) / 2, 0_size_k, self % preserve_shape)
         padding = self % padding
 
-        if (self % use_simd) then
-            call conv1d_simd(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
-        else
+        ! if (self % use_simd) then
+        !     call conv1d_simd(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
+        ! else
             call conv1d_core(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
-        end if
+        ! end if
 
         if (padding > 0) then
             call conv1d_core(x(output_size_raw - padding + 1:), &

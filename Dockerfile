@@ -11,8 +11,10 @@ COPY . /src/fastconv
 WORKDIR /src/fastconv
 
 ENV FPM_FC=gfortran
-ARG FPM_FFLAGS="-O3 -funsafe-math-optimizations -fno-semantic-interposition -fallow-store-data-races -fno-protect-parens -ffree-line-length-none -march=native"
+ARG FPM_FFLAGS="-O3 -funsafe-math-optimizations -ffree-line-length-none -march=native"
 ENV FPM_FFLAGS="${FPM_FFLAGS}"
 RUN fpm build --tests --verbose
 
-ENTRYPOINT fpm test test_conv1d && fpm test test_conv2d
+ENTRYPOINT fpm run --example test_conv1d \
+     && fpm run --example test_conv2d \
+     && fpm run --example test_conv3d 

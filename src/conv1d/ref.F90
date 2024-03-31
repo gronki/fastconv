@@ -6,7 +6,7 @@ submodule (conv1d_m) simple
 contains
 
 
-    module subroutine conv1d_ref_set_kernel(self, k)
+    pure module subroutine conv1d_ref_set_kernel(self, k)
         class(conv1d_ref_t), intent(inout) :: self
         real(real32), intent(in) :: k(:)
 
@@ -35,7 +35,7 @@ contains
     end function
 
 
-    module subroutine conv1d_ref_conv(self, x, y)
+    pure module subroutine conv1d_ref_conv(self, x, y)
         class(conv1d_ref_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:)
         real(real32), intent(inout), contiguous :: y(:)

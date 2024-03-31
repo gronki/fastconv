@@ -1,4 +1,4 @@
-submodule (conv2d_m) line
+submodule (conv2d_m) c2d_line
 
     use iso_fortran_env
     use conv_base_m, only: size_k
@@ -93,16 +93,16 @@ contains
 
         !!$omp parallel do private(ik, line_buf)
         do ix = 1, output_shape_raw(2)
-            do ik = 1, kernel_shape(2)
-                call self % kernels_1d(ik) % conv(x(:, ix + ik - 1), line_buf)
-                associate(y_row => y(1 + offset(1) : output_shape_raw(1) + offset(1), ix + offset(2)))
+            associate(y_row => y(1 + offset(1) : output_shape_raw(1) + offset(1), ix + offset(2)))
+                do ik = 1, kernel_shape(2)
+                    call self % kernels_1d(ik) % conv(x(:, ix + ik - 1), line_buf)
                     if (ik == 1) then
                         y_row(:) = line_buf
                     else
                         y_row(:) = y_row + line_buf
                     end if
-                end associate
-            end do
+                end do
+            end associate
         end do
         !!$omp end parallel do
     end subroutine

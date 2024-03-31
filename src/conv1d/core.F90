@@ -21,7 +21,7 @@ submodule (conv1d_m) c1d_core
 contains
 
     !> basic subroutine for 1D convolution, pure Fortran
-    module subroutine conv1d_core(x, k, y)
+    pure module subroutine conv1d_core(x, k, y)
         !> vector to be convolved
         real(real32), intent(in), contiguous :: x(:)
         !> convolution kernel (should be reversed beforehand)
@@ -50,7 +50,7 @@ contains
     end subroutine
 
     !> compute the convolution for any kernel length
-    subroutine conv1d_general(x, k, y)
+    pure subroutine conv1d_general(x, k, y)
         !> vector to be convolved
         real(real32), intent(in), contiguous :: x(:)
         !> convolution kernel (should be reversed beforehand)
@@ -74,7 +74,7 @@ contains
     end subroutine
 
     !> specific implementation for multiplies of 8
-    subroutine conv1d_k16(x, k, y)
+    pure subroutine conv1d_k16(x, k, y)
         !> vector to be convolved
         real(real32), intent(in), contiguous :: x(:)
         !> convolution kernel (should be reversed beforehand)
@@ -100,7 +100,7 @@ contains
     end subroutine
 
     !> specific implementation for multiplies of 8
-    subroutine conv1d_k8(x, k, y)
+    pure subroutine conv1d_k8(x, k, y)
         !> vector to be convolved
         real(real32), intent(in), contiguous :: x(:)
         !> convolution kernel (should be reversed beforehand)
@@ -126,7 +126,7 @@ contains
     end subroutine
 
     !> specific implementation for multiplies of 4
-    subroutine conv1d_k4(x, k, y)
+    pure subroutine conv1d_k4(x, k, y)
         !> vector to be convolved
         real(real32), intent(in), contiguous :: x(:)
         !> convolution kernel (should be reversed beforehand)

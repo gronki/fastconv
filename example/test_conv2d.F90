@@ -18,13 +18,8 @@ program test_conv2d
 
     call run_test(conv2d_ref_t())
     call run_test(conv2d_line_t(conv1d_ref_t()))
-    
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=4)))
-    call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=4, use_simd=.true.)))
-    
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=8)))
-    call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=8, use_simd=.true.)))
-    
     call run_test(conv2d_line_t(conv1d_pad_t(pad_modulo=16)))
 
     close(unit=77)

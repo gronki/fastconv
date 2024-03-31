@@ -3,3 +3,4 @@
 *.mod
 *.smod
 /scratch
+test_*_stats.txt
