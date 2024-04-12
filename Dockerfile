@@ -11,8 +11,8 @@ COPY . /src/fastconv
 WORKDIR /src/fastconv
 
 ENV FPM_FC=gfortran
-ARG FPM_FFLAGS="-O3 -funsafe-math-optimizations -funroll-loops -ffree-line-length-none"
-ENV FPM_FFLAGS="${FPM_FFLAGS}"
+ARG FFLAGS="-O3 -funsafe-math-optimizations -funroll-loops -ffree-line-length-none"
+ENV FPM_FFLAGS="${FFLAGS}"
 RUN fpm build --tests --verbose
 
 ENTRYPOINT fpm run --example test_conv1d \

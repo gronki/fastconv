@@ -1,51 +1,82 @@
 # fastconv
 
-A simple library for 1D and 2D convolutions in Modern Fortran.
+A simple library for 1D and 2D convolutions in Modern Fortran, compatible with [fpm](https://fpm.fortran-lang.org/). Focused on speed in image processing. Optimized for convolutions of 1D, 2D and 3D tensors with small kernels. Currently only implemented for ``real32``.
+
+## Installation
+
+The simplest way to use ``fastconv`` is to add it as dependency in ``fpm.toml``:
+
+```toml
+[dependencies]
+fastconv = { git = "https://github.com/gronki/fastconv.git" }
+```
+
+## Examples
+
+### Convolution 1D
+
+```fortran
+program fctest
+
+    use conv1d_m, only: conv1d_t
+    use iso_fortran_env, only: fp => real32
+
+    type(conv1d_t) :: conv1d
+    real(fp) :: inp(4), out1(2)
+    real(fp), allocatable :: out2(:)
+
+    inp(:) = [0, -1, 2, 0]
+    call conv1d % set_kernel ([-1.0_fp, 2.0_fp, -1.0_fp])
+    conv1d % preserve_shape = .false.
+
+    call conv1d % conv(inp, out1)
+    out2 = conv1d % apply(inp)
+
+    print *, "out1 = ", out1
+    print *, "shape(out1) = ", shape(out1)
+    print *, "out1 == out2 = ", out1 == out2
+
+    conv1d % preserve_shape = .true.
+    out2 = conv1d % apply(inp)
+    print *, "out2 = ", out2
+    print *, "shape(out2) = ", shape(out2)
+
+end program
+```
+
+Output:
+
+```
+ out1 =   -4.00000000       5.00000000    
+ shape(out1) =            2
+ out1 == out2 =  T T
+ out2 =    5.54353672E-42  -4.00000000       5.00000000       0.00000000    
+ shape(out2) =            4
+```
 
 ## Benchmarks
 
-Performed on ``11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz``:
+Benchmarks are available that allow to scan through setting space and choose the most optimal convolution parameters. Can be run either by
+
+```
+fpm run --example test_conv1d
+```
+
+or by building and executing Docker image:
+
+```
+docker build -t fastconv --build-arg FFLAGS="-O3 -funsafe-math-optimizations -funroll-loops -ffree-line-length-none -march=native" https://github.com/gronki/fastconv.git
+docker run -it fastconv
+```
+
+You should get the output like:
 
 ```
  conv1d_ref_t() --> 
-time =    11.38  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_ref_t(preserve_shape=.true.) --> 
-time =    11.38  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_t() --> 
-time =     7.18  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_t(preserve_shape=.true.) --> 
-time =     7.14  verif_x =       2492705612.  verif_y =       9192495419.
+time =    12.62  verif_x =       3142758373.  verif_y =       3117590248.
  conv1d_pad_t(pad_modulo=4) --> 
-time =     7.19  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_pad_t(pad_modulo=4, use_simd=.true.) --> 
-time =     7.93  verif_x =       2492705612.  verif_y =       9192495419.
+time =     9.13  verif_x =       3142758373.  verif_y =       3117590248.
  conv1d_pad_t(pad_modulo=8) --> 
-time =     7.13  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_pad_t(pad_modulo=8, use_simd=.true.) --> 
-time =     8.34  verif_x =       2492705612.  verif_y =       9192495419.
- conv1d_pad_t(pad_modulo=16) --> 
-time =     8.21  verif_x =       2492705612.  verif_y =       9192495419.
- conv2d_ref_t() --> 
-time =    22.24  verif_x =   507344962.  verif_y =   180885359.
- conv2d_ref_t(preserve_shape=.true.) --> 
-time =    22.37  verif_x =   507344962.  verif_y =   180885359.
- conv2d_t() --> 
-time =     9.90  verif_x =   507344962.  verif_y =   180885359.
- conv2d_t(preserve_shape=.true.) --> 
-time =     9.85  verif_x =   507344962.  verif_y =   180885359.
- conv2d_line_t(conv1d_pad_t(pad_modulo=4)) --> 
-time =     9.81  verif_x =   507344962.  verif_y =   180885359.
- conv2d_line_t(conv1d_pad_t(pad_modulo=4, use_simd=.true.)) --> 
-time =    11.31  verif_x =   507344962.  verif_y =   180885359.
- conv2d_line_t(conv1d_pad_t(pad_modulo=8)) --> 
-time =     9.71  verif_x =   507344962.  verif_y =   180885359.
- conv2d_line_t(conv1d_pad_t(pad_modulo=8, use_simd=.true.)) --> 
-time =    11.30  verif_x =   507344962.  verif_y =   180885359.
-```
-
-## Run benchmarks on your computer
-
-```bash
-docker build -t fastconv https://github.com/gronki/fastconv.git
-docker run -it fastconv
+time =     9.47  verif_x =       3142758373.  verif_y =       3117590248.
+...
 ```
