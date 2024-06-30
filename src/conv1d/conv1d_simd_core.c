@@ -61,13 +61,13 @@ void convolution_sse(const float *input, float *output, size_t output_length,
 #endif
 
 #if defined(__ARM_NEON__)
-void convolution_a53(const float *x, float *y, size_t n, const float *kernel, size_t m)
+void convolution_a53(const float *x, float *y, size_t n, const float *kernel, size_t kernel_length)
 {
     assert((kernel_length % 4) == 0);
     for (size_t i = 0; i < n; ++i)
     {
         float32x4_t sum = vdupq_n_f32(0.0f);
-        for (size_t j = 0; j < m; j += 4)
+        for (size_t j = 0; j < kernel_length; j += 4)
         {
             float32x4_t vx = vld1q_f32(&x[i + j]);
             float32x4_t vk = vld1q_f32(&kernel[j]);
