@@ -7,6 +7,8 @@ program verify_conv3d
 
     real(real32) :: x(284), k(25), y1(260), y2(260)
 
+    print *, 'test: conv1d'
+
     call random_seed()
 
     call random_number(x)
@@ -17,6 +19,7 @@ program verify_conv3d
         call conv % set_kernel(k)
         call conv % conv(x, y1)
     end block
+
     block
         type(conv1d_pad_t) :: conv
         conv = conv1d_pad_t(pad_modulo=8)
@@ -25,7 +28,7 @@ program verify_conv3d
     end block
 
     associate (err => sum(abs(y1-y2)) / size(y1))
-        print *, err
+        print *, 'error pad-ref=', err
         if (err > 2e-6) error stop
     end associate
 

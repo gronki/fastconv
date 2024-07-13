@@ -6,17 +6,17 @@ submodule (conv1d_m) c1d_core
 
     implicit none (type, external)
 
-    interface
-        subroutine convolution_simd(input, output, output_length, &
-            kernel, kernel_length, status) bind(C, name='convolution_simd')
-            import :: c_ptr, c_size_t, c_int
-            type(c_ptr), value :: input, output
-            integer(c_size_t), value :: output_length
-            type(c_ptr), value :: kernel
-            integer(c_size_t), value :: kernel_length
-            integer(c_int) :: status
-        end subroutine
-    end interface
+    ! interface
+    !     subroutine convolution_simd(input, output, output_length, &
+    !         kernel, kernel_length, status) bind(C, name='convolution_simd')
+    !         import :: c_ptr, c_size_t, c_int
+    !         type(c_ptr), value :: input, output
+    !         integer(c_size_t), value :: output_length
+    !         type(c_ptr), value :: kernel
+    !         integer(c_size_t), value :: kernel_length
+    !         integer(c_int) :: status
+    !     end subroutine
+    ! end interface
 
 contains
 
@@ -159,37 +159,56 @@ contains
 
     end subroutine
 
-    !> compute the convolution explicitly implemented using SIMD instruction
-    module subroutine conv1d_simd(x, k, y)
-        !> vector to be convolved
-        real(real32), intent(in), contiguous, target :: x(:)
-        !> convolution kernel (should be reversed beforehand)
-        real(real32), intent(in), contiguous, target :: k(:)
-        !> output vector, length size(x) + 1 - size(k)
-        real(real32), intent(out), contiguous, target :: y(:)
-        integer(c_size_t) :: kernel_size, output_size
-        integer(c_int) :: status
+    ! !> compute the convolution explicitly implemented using SIMD instruction
+    ! module subroutine conv1d_simd(x, k, y)
+    !     !> vector to be convolved
+    !     real(real32), intent(in), contiguous, target :: x(:)
+    !     !> convolution kernel (should be reversed beforehand)
+    !     real(real32), intent(in), contiguous, target :: k(:)
+    !     !> output vector, length size(x) + 1 - size(k)
+    !     real(real32), intent(out), contiguous, target :: y(:)
+    !     integer(c_size_t) :: kernel_size, output_size
+    !     integer(c_int) :: status
+    !     integer(c_int), save :: last_status = -1
 
-        kernel_size = size(k, kind=c_size_t)
-        output_size = size(x, kind=c_size_t) - kernel_size + 1
+    !     kernel_size = size(k, kind=c_size_t)
+    !     output_size = size(x, kind=c_size_t) - kernel_size + 1
 
-        call convolution_simd(c_loc(x), c_loc(y), output_size, c_loc(k), kernel_size, status)
+    !     call convolution_simd(c_loc(x), c_loc(y), output_size, c_loc(k), kernel_size, status)
 
-        ! appropriate simd procedure was not executed so, run the loop version
-        if (status == 0) then
-            block
-                logical, save :: warn = .true.
+    !     select case(status)
+    !       case (0)
+    !         if (status /= last_status) then
+    !             write (error_unit, "(a, i0, a)") &
+    !                 "Warning: SIMD convolution with kernel width ", &
+    !                 kernel_size, " failed; using native Fortran version"
+    !             last_status = status
+    !         end if
+    !         ! appropriate simd procedure was not executed so, run the loop version
+    !         call conv1d_core(x, k, y)
+    !       case (2)
+    !         if (last_status /= status) then
+    !             write (error_unit, "(a, i0, a)") &
+    !                 "Info: SIMD convolution with kernel width ", &
+    !                 kernel_size, " executed using AVX2 intrinsics"
+    !             last_status = status
+    !         end if
+    !       case (1)
+    !         if (last_status /= status) then
+    !             write (error_unit, "(a, i0, a)") &
+    !                 "Info: SIMD convolution with kernel width ", &
+    !                 kernel_size, " executed using SSE3 intrinsics"
+    !             last_status = status
+    !         end if
+    !       case (51)
+    !         if (last_status /= status) then
+    !             write (error_unit, "(a, i0, a)") &
+    !                 "Info: SIMD convolution with kernel width ", &
+    !                 kernel_size, " executed using A53 NEON intrinsics"
+    !             last_status = status
+    !         end if
+    !     end select
 
-                if (warn) then
-                    write (error_unit, "(a, i0, a)") &
-                        "Warning: SIMD convolution with kernel width ", &
-                        kernel_size, " failed; using native Fortran version"
-                    warn = .false.
-                end if
-            end block
-            call conv1d_core(x, k, y)
-        end if
-
-    end subroutine
+    ! end subroutine
 
 end submodule

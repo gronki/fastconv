@@ -8,6 +8,8 @@ program verify_conv3d
 
     real(real32) :: x(75,36), k(9,5), y1(67,32), y2(67,32)
 
+    print *, 'test: conv2d'
+    
     call random_seed()
 
     call random_number(x)
@@ -25,11 +27,10 @@ program verify_conv3d
         call conv % set_kernel(k)
         call conv % conv(x, y2)
         associate (err => sum(abs(y1-y2)) / size(y1))
-            print *, err
+            print *, 'error conv2d_line(conv1d_ref)-conv2d_ref', err
             if (err > 2e-6) error stop
         end associate
     end block
-
 
     block
         type(conv2d_line_t) :: conv
@@ -37,7 +38,7 @@ program verify_conv3d
         call conv % set_kernel(k)
         call conv % conv(x, y2)
         associate (err => sum(abs(y1-y2)) / size(y1))
-            print *, err
+            print *, 'error conv2d_line(conv1d_pad)-conv2d_ref', err
             if (err > 2e-6) error stop
         end associate
     end block

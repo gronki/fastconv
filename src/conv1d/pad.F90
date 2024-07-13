@@ -81,11 +81,7 @@ contains
             return
         end if
 
-        ! if (self % use_simd) then
-        !     call conv1d_simd(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
-        ! else
         call conv1d_core(x, self % kernel, y(1 + offset : output_size_raw - padding + offset))
-        ! end if
 
         if (padding > 0) then
             call conv1d_core(x(output_size_raw - padding + 1:), &
