@@ -6,7 +6,7 @@ submodule (conv2d_m) c2d_core
 
 contains
 
-    subroutine conv2d_ref_set_kernel(self, k)
+    module subroutine conv2d_ref_set_kernel(self, k)
         class(conv2d_ref_t), intent(inout) :: self
         real(real32), intent(in) :: k(:,:)
 
@@ -32,7 +32,7 @@ contains
     end function
 
 
-    subroutine conv2d_ref_conv(self, x, y)
+    module subroutine conv2d_ref_conv(self, x, y)
         class(conv2d_ref_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:,:)
         real(real32), intent(inout), contiguous :: y(:,:)

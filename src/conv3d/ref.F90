@@ -6,7 +6,7 @@ submodule (conv3d_m) c3d_core
 
 contains
 
-    subroutine conv3d_ref_set_kernel(self, k)
+    module subroutine conv3d_ref_set_kernel(self, k)
         class(conv3d_ref_t), intent(inout) :: self
         real(real32), intent(in) :: k(:,:,:)
 
@@ -32,7 +32,7 @@ contains
     end function
 
 
-    subroutine conv3d_ref_conv(self, x, y)
+    module subroutine conv3d_ref_conv(self, x, y)
         class(conv3d_ref_t), intent(in) :: self
         real(real32), intent(in), contiguous :: x(:,:,:)
         real(real32), intent(inout), contiguous :: y(:,:,:)
