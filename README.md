@@ -58,9 +58,14 @@ Output:
 
 Benchmarks are available that allow to scan through setting space and choose the most optimal convolution parameters. Can be run either by
 
+```sh
+./run.sh gcc
+./run.sh oneapi
 ```
-fpm run --example test_conv1d
-```
+
+To print more detailed statistics:
+
+``export EXTRA_OUTPUT=1``
 
 or by building and executing Docker image:
 
