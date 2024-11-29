@@ -56,7 +56,9 @@ Output:
 
 ## Benchmarks
 
-Benchmarks are available that allow to scan through setting space and choose the most optimal convolution parameters. Can be run either by
+Benchmarks are available that allow to scan through setting space and choose the most optimal convolution parameters. You might also be interested how Fortran performance compares to C++ (see [C++ translation of parts of this library](https://github.com/gronki/fastconv-cpp/)). 
+
+To run benchmark, you can use the wrapper script (requires ``fpm``):
 
 ```sh
 ./run.sh gcc
