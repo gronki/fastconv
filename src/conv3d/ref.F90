@@ -1,14 +1,13 @@
 submodule (conv3d_m) c3d_core
 
     use iso_fortran_env
-    use conv_base_m, only: size_k
     implicit none (type, external)
 
 contains
 
     module subroutine conv3d_ref_set_kernel(self, k)
         class(conv3d_ref_t), intent(inout) :: self
-        real(real32), intent(in) :: k(:,:,:)
+        real(real_k), intent(in) :: k(:,:,:)
 
         if (allocated(self % kernel)) &
             deallocate(self % kernel)
@@ -34,12 +33,12 @@ contains
 
     module subroutine conv3d_ref_conv(self, x, y)
         class(conv3d_ref_t), intent(in) :: self
-        real(real32), intent(in), contiguous :: x(:,:,:)
-        real(real32), intent(inout), contiguous :: y(:,:,:)
+        real(real_k), intent(in), contiguous :: x(:,:,:)
+        real(real_k), intent(inout), contiguous :: y(:,:,:)
 
         integer(kind=size_k) :: ix, ik, jx, jk, kx, kk, input_shape(3), kernel_shape(3)
         integer(kind=size_k) :: output_shape_raw(3), output_shape(3), offset(3)
-        real(real32) :: total
+        real(real_k) :: total
 
 #       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &

@@ -19,7 +19,7 @@ fastconv = { git = "https://github.com/gronki/fastconv.git" }
 program fctest
 
     use conv1d_m, only: conv1d_t
-    use iso_fortran_env, only: fp => real32
+    use iso_fortran_env, only: fp => real_k
 
     type(conv1d_t) :: conv1d
     real(fp) :: inp(4), out1(2)

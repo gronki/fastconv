@@ -2,6 +2,7 @@ program test_conv3d
 
     use testing_m
     use iso_fortran_env
+    use iso_fortran_env, only: real_k=>real32, size_k=>int64
     use conv3d_m
     use conv1d_m
 
@@ -30,17 +31,17 @@ contains
 
         character(len=*) :: test_title
         class(conv3d_base_t) :: conv
-        real(real32), allocatable :: x(:,:,:), y(:,:,:), k(:,:,:)
+        real(real_k), allocatable :: x(:,:,:), y(:,:,:), k(:,:,:)
         integer :: i, j, l, reps
         real(real64) :: time_total, t1, t2, verif_x, verif_y
-        integer(int64), parameter :: array_sizes(*,*) = reshape([ &
+        integer(size_k), parameter :: array_sizes(*,*) = reshape([ &
             64, 55, 33, &
             99, 77, 22, &
             45, 41, 65, &
             128, 111, 121, &
             167, 173, 211 &
         ], [5, 3], order=[2, 1])
-        integer(int64), parameter :: kernel_sizes(*,*) = reshape([ &
+        integer(size_k), parameter :: kernel_sizes(*,*) = reshape([ &
             3,  3,  3,  &
             3,  5,  3,  &
             5,  3,  3,  &
@@ -48,7 +49,7 @@ contains
             11, 13, 11, &
             19, 13, 17  &
         ], [6, 3], order=[2, 1])
-        integer(int64) :: output_shape(3)
+        integer(size_k) :: output_shape(3)
 
         time_total = 0
         verif_x = 0

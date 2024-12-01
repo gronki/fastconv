@@ -2,11 +2,11 @@ program verify_conv3d
 
     use conv2d_m
     use conv1d_m
-    use, intrinsic :: iso_fortran_env, only: real32
+    use iso_fortran_env, only: real_k=>real32, size_k=>int64
 
     implicit none
 
-    real(real32) :: x(75,36), k(9,5), y1(67,32), y2(67,32)
+    real(real_k) :: x(75,36), k(9,5), y1(67,32), y2(67,32)
 
     print *, 'test: conv2d'
     

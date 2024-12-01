@@ -1,6 +1,5 @@
 submodule (conv1d_m) simple
 
-    use conv_base_m, only: size_k
     implicit none (type, external)
 
 contains
@@ -8,12 +7,9 @@ contains
 
     pure module subroutine conv1d_ref_set_kernel(self, k)
         class(conv1d_ref_t), intent(inout) :: self
-        real(real32), intent(in) :: k(:)
+        real(real_k), intent(in) :: k(:)
 
-        if (allocated(self % kernel)) &
-            deallocate(self % kernel)
-
-        allocate(self % kernel, source=k(size(k):1:-1))
+        self % kernel = k(size(k, kind=size_k):1:-1)
 
     end subroutine
 
@@ -37,8 +33,8 @@ contains
 
     pure module subroutine conv1d_ref_conv(self, x, y)
         class(conv1d_ref_t), intent(in) :: self
-        real(real32), intent(in), contiguous :: x(:)
-        real(real32), intent(inout), contiguous :: y(:)
+        real(real_k), intent(in), contiguous :: x(:)
+        real(real_k), intent(inout), contiguous :: y(:)
         integer(kind=size_k) :: input_size, output_size, output_size_raw, offset, kernel_size
 
         input_size = size(x, kind=size_k)

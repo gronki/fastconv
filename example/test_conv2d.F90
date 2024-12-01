@@ -2,6 +2,7 @@ program test_conv2d
 
     use testing_m
     use iso_fortran_env
+    use iso_fortran_env, only: real_k=>real32, size_k=>int64
     use conv2d_m
     use conv1d_m
 
@@ -30,10 +31,10 @@ contains
 
         character(len=*) :: test_title
         class(conv2d_base_t) :: conv
-        real(real32), allocatable :: x(:,:), y(:,:), k(:,:)
+        real(real_k), allocatable :: x(:,:), y(:,:), k(:,:)
         integer :: i, j, l, reps
         real(real64) :: time_total, t1, t2, verif_x, verif_y
-        integer(int64), parameter :: array_sizes(*,*) = reshape([ &
+        integer(size_k), parameter :: array_sizes(*,*) = reshape([ &
              87,   91, &
             123,  321, &
             422,  522, &
@@ -41,7 +42,7 @@ contains
             911, 1337, &
             2421, 1377, &
             3698, 3142], [7, 2], order=[2, 1])
-        integer(int64), parameter :: kernel_sizes(*,*) = reshape([ &
+        integer(size_k), parameter :: kernel_sizes(*,*) = reshape([ &
             3,  3,  &
             5,  3,  &
             3,  5,  &
@@ -60,7 +61,7 @@ contains
             27, 21, &
             21, 27, &
             27, 27  ], [18, 2], order=[2, 1])
-        integer(int64) :: output_shape(2)
+        integer(size_k) :: output_shape(2)
 
         time_total = 0
         verif_x = 0

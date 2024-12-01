@@ -1,6 +1,5 @@
 submodule (conv3d_m) c3d_base
 
-    use conv_base_m, only: size_k
     implicit none (type, external)
 
 contains
@@ -19,8 +18,8 @@ contains
 
     module function apply(self, x) result(y)
         class(conv3d_base_t), intent(in) :: self
-        real(real32), intent(in), contiguous :: x(:,:,:)
-        real(real32), allocatable :: y(:,:,:)
+        real(real_k), intent(in), contiguous :: x(:,:,:)
+        real(real_k), allocatable :: y(:,:,:)
         integer(kind=size_k) :: output_shape(3)
 
         output_shape = self % output_shape(shape(x, kind=size_k))

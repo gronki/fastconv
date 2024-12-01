@@ -1,7 +1,6 @@
 submodule (conv2d_m) c2d_line
 
     use iso_fortran_env
-    use conv_base_m, only: size_k
     implicit none (type, external)
 
 contains
@@ -19,7 +18,7 @@ contains
     module subroutine conv2d_line_set_kernel(self, k)
         use conv1d_m, only: conv1d_t
         class(conv2d_line_t), intent(inout) :: self
-        real(real32), intent(in) :: k(:,:)
+        real(real_k), intent(in) :: k(:,:)
         integer(kind=size_k) :: ix, kernel_shape(2)
 
         if (allocated(self % kernels_1d)) deallocate(self % kernels_1d)
@@ -58,10 +57,10 @@ contains
 
     module subroutine conv2d_line_conv(self, x, y)
         class(conv2d_line_t), intent(in) :: self
-        real(real32), intent(in), contiguous :: x(:,:)
-        real(real32), intent(inout), contiguous :: y(:,:)
+        real(real_k), intent(in), contiguous :: x(:,:)
+        real(real_k), intent(inout), contiguous :: y(:,:)
 
-        real(real32), allocatable :: line_buf(:)
+        real(real_k), allocatable :: line_buf(:)
         integer(kind=size_k) :: input_shape(2), output_shape_raw(2), output_shape(2)
         integer(kind=size_k) :: ix, ik, offset(2), kernel_shape(2)
 

@@ -1,14 +1,13 @@
 submodule (conv2d_m) c2d_core
 
     use iso_fortran_env
-    use conv_base_m, only: size_k
     implicit none (type, external)
 
 contains
 
     module subroutine conv2d_ref_set_kernel(self, k)
         class(conv2d_ref_t), intent(inout) :: self
-        real(real32), intent(in) :: k(:,:)
+        real(real_k), intent(in) :: k(:,:)
 
         if (allocated(self % kernel)) &
             deallocate(self % kernel)
@@ -34,12 +33,12 @@ contains
 
     module subroutine conv2d_ref_conv(self, x, y)
         class(conv2d_ref_t), intent(in) :: self
-        real(real32), intent(in), contiguous :: x(:,:)
-        real(real32), intent(inout), contiguous :: y(:,:)
+        real(real_k), intent(in), contiguous :: x(:,:)
+        real(real_k), intent(inout), contiguous :: y(:,:)
 
         integer(kind=size_k) :: ix, ik, jx, jk, input_shape(2), kernel_shape(2)
         integer(kind=size_k) :: output_shape_raw(2), output_shape(2), offset(2)
-        real(real32) :: total
+        real(real_k) :: total
 
 #       ifndef NDEBUG
         if (.not. allocated(self % kernel)) &

@@ -1,7 +1,6 @@
 module conv3d_m
 
-    use iso_fortran_env
-    use conv_base_m
+    use iso_fortran_env, only: real_k=>real32, size_k=>int64
     use conv1d_m, only: conv1d_base_t
 
     implicit none (type, external)
@@ -9,7 +8,8 @@ module conv3d_m
 
     ! base classes
 
-    type, extends(conv_base_t), abstract :: conv3d_base_t
+    type, abstract :: conv3d_base_t
+        logical :: preserve_shape = .false.
     contains
         procedure(set_kernel_proto), deferred :: set_kernel
         procedure(kernel_shape_proto), deferred :: kernel_shape
@@ -20,9 +20,9 @@ module conv3d_m
 
     abstract interface
         subroutine set_kernel_proto(self, k)
-            import :: conv3d_base_t, real32
+            import :: conv3d_base_t, real_k
             class(conv3d_base_t), intent(inout) :: self
-            real(real32), intent(in) :: k(:,:,:)
+            real(real_k), intent(in) :: k(:,:,:)
         end subroutine
 
         pure function kernel_shape_proto(self) result(kernel_shape)
@@ -32,10 +32,10 @@ module conv3d_m
         end function
 
         subroutine conv_proto(self, x, y)
-            import :: conv3d_base_t, real32
+            import :: conv3d_base_t, real_k
             class(conv3d_base_t), intent(in) :: self
-            real(real32), intent(in), contiguous :: x(:,:,:)
-            real(real32), intent(inout), contiguous :: y(:,:,:)
+            real(real_k), intent(in), contiguous :: x(:,:,:)
+            real(real_k), intent(inout), contiguous :: y(:,:,:)
         end subroutine
     end interface
 
@@ -48,8 +48,8 @@ module conv3d_m
 
         module function apply(self, x) result(y)
             class(conv3d_base_t), intent(in) :: self
-            real(real32), intent(in), contiguous :: x(:,:,:)
-            real(real32), allocatable :: y(:,:,:)
+            real(real_k), intent(in), contiguous :: x(:,:,:)
+            real(real_k), allocatable :: y(:,:,:)
         end function
     end interface
 
@@ -58,7 +58,7 @@ module conv3d_m
     ! reference implementation
 
     type, extends(conv3d_base_t) :: conv3d_ref_t
-        real(real32), allocatable, private :: kernel(:,:,:)
+        real(real_k), allocatable, private :: kernel(:,:,:)
     contains
         procedure :: set_kernel => conv3d_ref_set_kernel
         procedure :: kernel_shape => conv3d_ref_kernel_shape
@@ -68,7 +68,7 @@ module conv3d_m
     interface
         module subroutine conv3d_ref_set_kernel(self, k)
             class(conv3d_ref_t), intent(inout) :: self
-            real(real32), intent(in) :: k(:,:,:)
+            real(real_k), intent(in) :: k(:,:,:)
         end subroutine
 
         pure module function conv3d_ref_kernel_shape(self) result(kernel_shape)
@@ -78,8 +78,8 @@ module conv3d_m
 
         module subroutine conv3d_ref_conv(self, x, y)
             class(conv3d_ref_t), intent(in) :: self
-            real(real32), intent(in), contiguous :: x(:,:,:)
-            real(real32), intent(inout), contiguous :: y(:,:,:)
+            real(real_k), intent(in), contiguous :: x(:,:,:)
+            real(real_k), intent(inout), contiguous :: y(:,:,:)
         end subroutine
     end interface
 
@@ -107,7 +107,7 @@ module conv3d_m
     interface
         module subroutine conv3d_line_set_kernel(self, k)
             class(conv3d_line_t), intent(inout) :: self
-            real(real32), intent(in) :: k(:,:,:)
+            real(real_k), intent(in) :: k(:,:,:)
         end subroutine
 
         pure module function conv3d_line_kernel_shape(self) result(kernel_shape)
@@ -117,8 +117,8 @@ module conv3d_m
 
         module subroutine conv3d_line_conv(self, x, y)
             class(conv3d_line_t), intent(in) :: self
-            real(real32), intent(in), contiguous :: x(:,:,:)
-            real(real32), intent(inout), contiguous :: y(:,:,:)
+            real(real_k), intent(in), contiguous :: x(:,:,:)
+            real(real_k), intent(inout), contiguous :: y(:,:,:)
         end subroutine
     end interface
 
