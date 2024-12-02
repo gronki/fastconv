@@ -8,42 +8,42 @@ module conv1d_m
     ! procedures
 
     interface
+
         pure module subroutine conv1d_core(x, k, y)
             real(real_k), intent(in), contiguous :: x(:), k(:)
             real(real_k), intent(out), contiguous :: y(:)
         end subroutine
 
-        pure module subroutine conv1d_pad_core(x, k, padding, y)
+        pure module subroutine conv1d_pad_core(x, k, kernel_size, y)
             real(real_k), intent(in), contiguous :: x(:), k(:)
-            integer(size_k), intent(in) :: padding
+            integer(size_k), intent(in) :: kernel_size
             real(real_k), intent(out), contiguous :: y(:)
         end subroutine
 
-        elemental module function modulo_padding(kernel_size, pad_modulo)
+        elemental module function padded_dimension(kernel_size, pad_modulo)
             integer(kind=size_k), intent(in) :: kernel_size, pad_modulo
-            integer(kind=size_k) :: modulo_padding
+            integer(kind=size_k) :: padded_dimension
         end function
-
-        pure module function padded_1d_kernel(k, pad_modulo)
+        
+        pure module function padded_1d_kernel(k, pad_modulo) result(padded_kernel)
             real(real_k), intent(in) :: k(:)
             integer(kind=size_k), intent(in) :: pad_modulo
-            real(kind=real_k), allocatable :: padded_1d_kernel(:)
+            real(kind=real_k), allocatable :: padded_kernel(:)
         end function
 
     end interface
 
-    public :: conv1d_core, conv1d_pad_core
+    public :: conv1d_core, conv1d_pad_core, padded_1d_kernel, padded_dimension
 
     ! base class
 
     type, abstract :: conv1d_base_t
         logical :: preserve_shape = .false.    
-        real(real_k), allocatable :: kernel(:)
     contains
         procedure(set_kernel_proto), deferred :: set_kernel
         procedure(output_size_proto), deferred :: output_size
         procedure(conv_proto), deferred :: conv
-        procedure :: apply
+        procedure, non_overridable :: apply
     end type
 
     abstract interface
@@ -73,6 +73,7 @@ module conv1d_m
     ! reference implementation
 
     type, extends(conv1d_base_t) :: conv1d_ref_t
+        real(real_k), allocatable, private :: kernel(:)
     contains
         procedure :: set_kernel => conv1d_ref_set_kernel
         procedure :: output_size => conv1d_ref_output_size
@@ -104,8 +105,8 @@ module conv1d_m
 
     type, extends(conv1d_base_t) :: conv1d_pad_t
         integer(kind=size_k) :: pad_modulo = 4
-        ! logical :: use_simd = .false.
-        integer(kind=size_k), private :: padding = 0, kernel_size = 0
+        real(real_k), allocatable, private :: kernel(:)
+        integer(kind=size_k), private :: kernel_size = 0
     contains
         procedure :: set_kernel => conv1d_pad_set_kernel
         procedure :: output_size => conv1d_pad_output_size

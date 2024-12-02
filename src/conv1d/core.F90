@@ -5,37 +5,25 @@ submodule (conv1d_m) c1d_core
 
     implicit none (type, external)
 
-    ! interface
-    !     subroutine convolution_simd(input, output, output_length, &
-    !         kernel, kernel_length, status) bind(C, name='convolution_simd')
-    !         import :: c_ptr, c_size_t, c_int
-    !         type(c_ptr), value :: input, output
-    !         integer(c_size_t), value :: output_length
-    !         type(c_ptr), value :: kernel
-    !         integer(c_size_t), value :: kernel_length
-    !         integer(c_int) :: status
-    !     end subroutine
-    ! end interface
-
 contains
 
     !> Compute convolution for kernel which is padded with zeros.
     !> This is good for performance reasons, as such kernels can
     !> be better vectorized into SIMD instructions.
-    pure module subroutine conv1d_pad_core(x, k, padding, y)
+    pure module subroutine conv1d_pad_core(x, k, kernel_size, y)
         !> Input vector. 
         real(real_k), intent(in), contiguous :: x(:)
         !> Reversed kernel padded with zeros.
         real(real_k), intent(in), contiguous :: k(:)
         !> Width of the padding. For zero this will be a normal convolution.
-        integer(size_k), intent(in) :: padding
+        integer(size_k), intent(in) :: kernel_size
         !> Output.
         real(real_k), intent(out), contiguous :: y(:)
 
-        integer(size_k) :: input_size, kernel_size, output_size_raw
+        integer(size_k) :: input_size, padding, output_size_raw
         
         input_size = size(x, kind=size_k)
-        kernel_size = size(k, kind=size_k) - padding
+        padding = size(k, kind=size_k) - kernel_size
         output_size_raw = input_size - kernel_size + 1_size_k
 
 #       ifndef NDEBUG
@@ -195,57 +183,5 @@ contains
         end do
 
     end subroutine
-
-    ! !> compute the convolution explicitly implemented using SIMD instruction
-    ! module subroutine conv1d_simd(x, k, y)
-    !     !> vector to be convolved
-    !     real(real_k), intent(in), contiguous, target :: x(:)
-    !     !> convolution kernel (should be reversed beforehand)
-    !     real(real_k), intent(in), contiguous, target :: k(:)
-    !     !> output vector, length size(x) + 1 - size(k)
-    !     real(real_k), intent(out), contiguous, target :: y(:)
-    !     integer(c_size_t) :: kernel_size, output_size
-    !     integer(c_int) :: status
-    !     integer(c_int), save :: last_status = -1
-
-    !     kernel_size = size(k, kind=c_size_t)
-    !     output_size = size(x, kind=c_size_t) - kernel_size + 1
-
-    !     call convolution_simd(c_loc(x), c_loc(y), output_size, c_loc(k), kernel_size, status)
-
-    !     select case(status)
-    !       case (0)
-    !         if (status /= last_status) then
-    !             write (error_unit, "(a, i0, a)") &
-    !                 "Warning: SIMD convolution with kernel width ", &
-    !                 kernel_size, " failed; using native Fortran version"
-    !             last_status = status
-    !         end if
-    !         ! appropriate simd procedure was not executed so, run the loop version
-    !         call conv1d_core(x, k, y)
-    !       case (2)
-    !         if (last_status /= status) then
-    !             write (error_unit, "(a, i0, a)") &
-    !                 "Info: SIMD convolution with kernel width ", &
-    !                 kernel_size, " executed using AVX2 intrinsics"
-    !             last_status = status
-    !         end if
-    !       case (1)
-    !         if (last_status /= status) then
-    !             write (error_unit, "(a, i0, a)") &
-    !                 "Info: SIMD convolution with kernel width ", &
-    !                 kernel_size, " executed using SSE3 intrinsics"
-    !             last_status = status
-    !         end if
-    !       case (51)
-    !         if (last_status /= status) then
-    !             write (error_unit, "(a, i0, a)") &
-    !                 "Info: SIMD convolution with kernel width ", &
-    !                 kernel_size, " executed using A53 NEON intrinsics"
-    !             last_status = status
-    !         end if
-    !     end select
-
-    ! end subroutine
 
 end submodule

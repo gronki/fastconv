@@ -4,27 +4,28 @@ submodule (conv1d_m) pad
 
 contains
     
-    elemental module function modulo_padding(kernel_size, pad_modulo)
+    elemental module function padded_dimension(kernel_size, pad_modulo)
         integer(kind=size_k), intent(in) :: kernel_size, pad_modulo
-        integer(kind=size_k) :: modulo_padding
+        integer(kind=size_k) :: padded_dimension
 
-        modulo_padding = modulo(-kernel_size, pad_modulo)
+        padded_dimension = kernel_size + modulo(-kernel_size, pad_modulo)
 
     end function
 
-    pure module function padded_1d_kernel(k, pad_modulo)
+    pure module function padded_1d_kernel(k, pad_modulo) result(padded_kernel)
         real(real_k), intent(in) :: k(:)
         integer(kind=size_k), intent(in) :: pad_modulo
-        real(kind=real_k), allocatable :: padded_1d_kernel(:)
+        real(kind=real_k), allocatable :: padded_kernel(:)
     
         integer(kind=size_k) :: kernel_size, padded_size
         
         kernel_size = size(k, kind=size_k)
-        padded_size = kernel_size + modulo_padding(kernel_size, pad_modulo)
-        allocate(padded_1d_kernel(padded_size))
+        padded_size = padded_dimension(kernel_size, pad_modulo)
         
-        padded_1d_kernel(1:kernel_size) = k(kernel_size:1:-1)
-        if (padded_size > kernel_size) padded_1d_kernel(kernel_size + 1 :) = 0
+        allocate(padded_kernel(padded_size))
+        
+        padded_kernel(1:kernel_size) = k(kernel_size:1:-1)
+        if (padded_size > kernel_size) padded_kernel(kernel_size + 1 :) = 0
 
     end function
 
@@ -35,7 +36,6 @@ contains
         
         self % kernel_size = size(k, kind=size_k)
         self % kernel = padded_1d_kernel(k, self % pad_modulo)
-        self % padding = modulo_padding(size(k, kind=size_k), self % pad_modulo)
 
     end subroutine
 
@@ -89,7 +89,7 @@ contains
         output_size_raw = input_size - kernel_size + 1
         offset = merge((kernel_size - 1_size_k) / 2, 0_size_k, self % preserve_shape)
 
-        call conv1d_pad_core(x, self % kernel, self % padding, y(1 + offset : output_size_raw + offset))
+        call conv1d_pad_core(x, self % kernel, kernel_size, y(1 + offset : output_size_raw + offset))
 
     end subroutine
 
