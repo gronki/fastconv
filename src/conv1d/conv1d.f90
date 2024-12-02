@@ -26,9 +26,9 @@ module conv1d_m
         end function
         
         pure module function padded_1d_kernel(k, pad_modulo) result(padded_kernel)
-            real(real_k), intent(in) :: k(:)
+            real(kind=real_k), intent(in) :: k(:)
             integer(kind=size_k), intent(in) :: pad_modulo
-            real(kind=real_k), allocatable :: padded_kernel(:)
+            real(kind=real_k) :: padded_kernel(padded_dimension(size(k, kind=size_k), pad_modulo))
         end function
 
     end interface

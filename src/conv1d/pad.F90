@@ -4,31 +4,6 @@ submodule (conv1d_m) pad
 
 contains
     
-    elemental module function padded_dimension(kernel_size, pad_modulo)
-        integer(kind=size_k), intent(in) :: kernel_size, pad_modulo
-        integer(kind=size_k) :: padded_dimension
-
-        padded_dimension = kernel_size + modulo(-kernel_size, pad_modulo)
-
-    end function
-
-    pure module function padded_1d_kernel(k, pad_modulo) result(padded_kernel)
-        real(real_k), intent(in) :: k(:)
-        integer(kind=size_k), intent(in) :: pad_modulo
-        real(kind=real_k), allocatable :: padded_kernel(:)
-    
-        integer(kind=size_k) :: kernel_size, padded_size
-        
-        kernel_size = size(k, kind=size_k)
-        padded_size = padded_dimension(kernel_size, pad_modulo)
-        
-        allocate(padded_kernel(padded_size))
-        
-        padded_kernel(1:kernel_size) = k(kernel_size:1:-1)
-        if (padded_size > kernel_size) padded_kernel(kernel_size + 1 :) = 0
-
-    end function
-
     pure module subroutine conv1d_pad_set_kernel(self, k)
         class(conv1d_pad_t), intent(inout) :: self
         real(real_k), intent(in) :: k(:)
